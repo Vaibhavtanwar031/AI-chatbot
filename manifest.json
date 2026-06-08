@@ -1,0 +1,16 @@
+{
+  "short_name": "UEM Assistant",
+  "name": "UEM Virtual Chatbot Assistant",
+  "icons": [
+    {
+      "src": "app_icon.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "index.html",
+  "background_color": "#101026",
+  "theme_color": "#8b5cf6",
+  "display": "standalone",
+  "orientation": "portrait"
+}

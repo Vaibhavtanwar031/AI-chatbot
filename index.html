@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UEM Chatbot Assistant - Premium Edition</title>
+    <meta name="description"
+        content="Premium UEM Virtual Assistant - Admissions, Fee status, Student portal, Analytics dashboards, dynamic voice and AI tools.">
+
+    <!-- Design System CSS Modules -->
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/chat.css">
+    <link rel="stylesheet" href="css/panels.css">
+
+    <!-- Load Three.js for 3D Chatbot Avatar -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+
+<body>
+    <!-- 3D Realistic Glowing Chatbot Avatar Container -->
+    <div id="canvas-3d-city"></div>
+
+    <!-- ============================================================
+       TOP GLASS NAVIGATION BAR
+       ============================================================ -->
+    <nav class="app-navbar">
+        <a href="#" class="nav-brand">
+            <span class="brand-logo">🎓</span>
+            <span data-i18n="navBrand">UEM Jaipur</span>
+        </a>
+
+        <div class="nav-links">
+            <button class="nav-btn" onclick="window.openAppModal('analyticsModal')">
+                <span>📊</span> <span data-i18n="navAnalytics">Analytics</span>
+            </button>
+            <button class="nav-btn" onclick="window.openAppModal('adminModal')">
+                <span>⚙️</span> <span data-i18n="navAdmin">Admin Panel</span>
+            </button>
+            <button class="nav-btn primary" id="navStudentPortalBtn" onclick="window.handlePortalClick()">
+                <span>👤</span> <span data-i18n="navStudentPortal">Student Portal</span>
+            </button>
+
+            <div class="nav-action-group">
+                <!-- Notification Bell -->
+                <button class="circle-icon-btn" onclick="window.toggleNotifDropdown()" title="Notice Board">
+                    <span>🔔</span>
+                    <span class="badge" id="notifBadge" style="display: none;">0</span>
+                </button>
+
+                <!-- Language Toggle Selector -->
+                <button class="circle-icon-btn" onclick="window.toggleLanguage()" title="Switch Language"
+                    id="langToggleBtn" style="font-weight: 700; font-size: 0.8rem;">
+                    HI
+                </button>
+
+                <!-- Dark / Light Theme Toggle -->
+                <button class="circle-icon-btn" onclick="window.toggleTheme()" title="Toggle Theme" id="themeToggleBtn">
+                    <span id="themeIcon">☀️</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ============================================================
+       HERO PAGE DETAILS
+       ============================================================ -->
+    <main class="hero-container">
+        <div class="hero-content">
+            <h1 class="hero-title" data-i18n="heroTitle">🎓 UEM Jaipur</h1>
+            <p class="hero-subtitle" data-i18n="heroSubtitle">Your Virtual Intelligent Assistant is online. Click the
+                chat button to begin →</p>
+
+            <div class="hero-badges">
+                <span class="hero-tag">🔒 Digital ID QR</span>
+                <span class="hero-tag">🎙️ Full Voice controls</span>
+                <span class="hero-tag">⚡ Local AI Engine</span>
+                <span class="hero-tag">📊 Live Analytics</span>
+            </div>
+        </div>
+    </main>
+
+    <!-- ============================================================
+       FLOATING CHATBOT CONTROLLER WINDOW
+       ============================================================ -->
+    <!-- Toggle Floating Button -->
+    <button class="chat-toggle-btn" id="chatToggleBtn" onclick="window.toggleChat()" title="Open Chat"
+        aria-label="Toggle chat">
+        <span class="icon-chat">💬</span>
+        <span class="icon-close">✕</span>
+    </button>
+
+    <!-- Chat Frame -->
+    <div class="chat-container" id="chatContainer">
+        <!-- Header -->
+        <div class="chat-header">
+            <div class="header-left">
+                <div class="header-avatar">🎓</div>
+                <div class="header-info">
+                    <h3 data-i18n="chatHeaderTitle">UEM Virtual Assistant</h3>
+                    <div class="status">
+                        <span class="status-dot"></span>
+                        <span data-i18n="chatHeaderStatus">Online · Admissions, Fees & more</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="header-actions">
+                <!-- Text-to-speech toggler -->
+                <button class="header-icon-btn" id="speakerToggleBtn" onclick="window.toggleSpeaker()"
+                    title="Read Responses out loud">
+                    🔇
+                </button>
+                <!-- Chat summarizer link -->
+                <button class="header-icon-btn" onclick="window.summarizeChat()" title="Summarize Dialogue with AI"
+                    style="font-size: 10px;">
+                    ✨
+                </button>
+                <!-- Minimizer -->
+                <button class="header-icon-btn" onclick="window.toggleChat()" title="Minimize">
+                    ✕
+                </button>
+            </div>
+        </div>
+
+        <!-- Scrolling Messages Panel -->
+        <div class="chat-messages" id="chatMessages">
+            <!-- Dynamically Rendered by JS -->
+        </div>
+
+        <!-- Input Panel & Active Waveform -->
+        <div class="chat-input-area">
+            <!-- Pulsing audio recognition waveform -->
+            <div class="voice-wave-container" id="voiceWaveContainer">
+                <span class="voice-wave-text">Listening to voice inputs...</span>
+                <div class="voice-waves">
+                    <div class="wave-bar"></div>
+                    <div class="wave-bar"></div>
+                    <div class="wave-bar"></div>
+                    <div class="wave-bar"></div>
+                    <div class="wave-bar"></div>
+                </div>
+                <button class="header-icon-btn" onclick="window.cancelVoiceListening()" title="Cancel Voice Input"
+                    style="background:rgba(0,0,0,0.25); border:none;">✕</button>
+            </div>
+
+            <!-- File Attachments trigger -->
+            <button class="chat-input-btn" onclick="window.uploadFileSelector()" title="Attach Document (Max 5MB)">
+                📎
+            </button>
+
+            <!-- Input text box -->
+            <input type="text" id="userInput" data-i18n="chatInputPlaceholder" placeholder="Ask me anything..."
+                onkeypress="window.handleKeyPress(event)" autocomplete="off">
+
+            <!-- Voice microphone input -->
+            <button class="chat-input-btn" onclick="window.startVoiceRecognition()" title="Voice Input"
+                style="font-size: 1.1rem;">
+                🎙️
+            </button>
+
+            <!-- Standard Send button -->
+            <button class="chat-input-btn send-btn" onclick="window.submitMessage()" title="Send Message"
+                data-i18n="btnSend">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- ============================================================
+       MODAL TRAY DIALOGUES
+       ============================================================ -->
+
+    <!-- 1. STUDENT AUTHENTICATION MODAL -->
+    <div class="app-modal" id="authModal">
+        <div class="modal-content" style="max-width: 440px;">
+            <div class="modal-header">
+                <h2 data-i18n="loginTitle">🔐 Student Portal Login</h2>
+                <button class="close-modal-btn" onclick="window.closeAppModal('authModal')">✕</button>
+            </div>
+            <div class="modal-body">
+                <!-- Registration and Login views container -->
+                <div class="auth-container">
+                    <!-- Switch tabs -->
+                    <div class="auth-tabs" id="authTabs" style="width: 100%;">
+                        <button class="auth-tab-btn active" onclick="window.switchAuthTab('login')" id="tabLoginBtn"
+                            data-i18n="btnLogin">Sign In</button>
+                        <button class="auth-tab-btn" onclick="window.switchAuthTab('register')" id="tabRegisterBtn"
+                            data-i18n="btnRegister">Register Account</button>
+                    </div>
+
+                    <!-- Form 1: LOGIN -->
+                    <div class="auth-card" id="loginFormContainer" style="width: 100%;">
+                        <div class="form-group">
+                            <label data-i18n="rollNumberLabel">Roll Number / Student ID</label>
+                            <input type="text" id="loginRollNumber" placeholder="e.g. UEM-2026-CSE001">
+                        </div>
+                        <div class="form-group">
+                            <label data-i18n="passwordLabel">Password</label>
+                            <input type="password" id="loginPassword" placeholder="••••••••">
+                        </div>
+                        <button class="nav-btn primary" onclick="window.submitStudentLogin()"
+                            style="width: 100%; justify-content: center; padding: 12px;" data-i18n="btnLogin">Sign
+                            In</button>
+                    </div>
+
+                    <!-- Form 2: SIGN UP / REGISTER -->
+                    <div class="auth-card" id="registerFormContainer" style="display: none; width: 100%;">
+                        <div class="form-group">
+                            <label data-i18n="fullNameLabel">Full Name</label>
+                            <input type="text" id="regFullName" placeholder="e.g. Vaibhav Tanwar">
+                        </div>
+                        <div class="form-group">
+                            <label data-i18n="rollNumberLabel">Roll Number / Student ID</label>
+                            <input type="text" id="regRollNumber" placeholder="e.g. UEM-2026-CSE001">
+                        </div>
+                        <div class="form-group">
+                            <label data-i18n="passwordLabel">Password</label>
+                            <input type="password" id="regPassword" placeholder="••••••••">
+                        </div>
+                        <div class="form-group">
+                            <label data-i18n="courseLabel">Select Course</label>
+                            <select id="regCourse">
+                                <option value="B.Tech Computer Science Engineering">B.Tech Computer Science Engineering
+                                    (CSE)</option>
+                                <option value="B.Tech Electronics Engineering">B.Tech Electronics Engineering (ECE)
+                                </option>
+                                <option value="Master of Business Administration">Master of Business Administration
+                                    (MBA)</option>
+                                <option value="M.Tech Information Technology">M.Tech Information Technology (IT)
+                                </option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label data-i18n="attendanceLabel">Initial Attendance (%)</label>
+                            <input type="number" id="regAttendance" placeholder="e.g. 85" min="0" max="100">
+                        </div>
+                        <button class="nav-btn primary" onclick="window.submitStudentRegister()"
+                            style="width: 100%; justify-content: center; padding: 12px;" data-i18n="btnSignUp">Sign
+                            Up</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. STUDENT PORTAL PERSONALIZED DASHBOARD PANEL -->
+    <div class="app-modal" id="studentDashboardModal">
+        <div class="modal-content" style="max-width: 800px;">
+            <div class="modal-header">
+                <h2 data-i18n="dashboardTitle">🎓 Student Dashboard</h2>
+                <button class="close-modal-btn" onclick="window.closeAppModal('studentDashboardModal')">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="student-dashboard">
+                    <!-- Left profile side bar -->
+                    <div class="student-sidebar">
+                        <div class="student-avatar" id="dbAvatarIcon">👤</div>
+                        <h3 id="dbStudentName" style="margin-top: 10px;">Student Name</h3>
+                        <p id="dbStudentRoll" style="font-size: 0.85rem; color: var(--text-secondary);">Roll Number</p>
+
+                        <!-- High visual digital QR Student badge -->
+                        <div style="margin-top: 15px; text-align: center;">
+                            <span class="hero-tag" data-i18n="studentIdBadge"
+                                style="display: block; margin-bottom: 6px; font-size: 0.75rem;">STUDENT ID</span>
+                            <div class="qr-badge-container">
+                                <img id="dbQrCodeBadge" src="" alt="Student Profile QR Code">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right personal metrics panel -->
+                    <div class="student-main">
+                        <!-- Stat Grid info cards -->
+                        <div class="dashboard-stats">
+                            <div class="stat-card">
+                                <span class="stat-icon">🎓</span>
+                                <div class="stat-info">
+                                    <div class="stat-lbl">Registered Course</div>
+                                    <div class="stat-val" id="dbStudentCourse"
+                                        style="font-size: 0.8rem; font-weight:600;">Course</div>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <span class="stat-icon">📈</span>
+                                <div class="stat-info">
+                                    <div class="stat-lbl" data-i18n="gpaHeader">Academic Progress</div>
+                                    <div class="stat-val" id="dbGpaVal">0.0</div>
+                                    <div class="progress-bar-linear" style="width: 100px;">
+                                        <div class="progress-fill-linear" id="dbGpaFill"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Attendance Circle Progress Bar -->
+                        <div class="dashboard-panel-sec">
+                            <h4 data-i18n="attendanceHeader">Attendance Tracker</h4>
+                            <div class="progress-circle-wrap">
+                                <div style="font-size: 1.6rem;">📊</div>
+                                <div style="flex: 1;">
+                                    <div style="display:flex; justify-content:space-between; font-size:0.85rem;">
+                                        <span data-i18n="attendanceHeader">Attendance</span>
+                                        <strong id="dbAttendanceVal">0%</strong>
+                                    </div>
+                                    <div class="progress-bar-linear">
+                                        <div class="progress-fill-linear" id="dbAttendanceFill"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Outstanding dues links -->
+                        <div class="dashboard-panel-sec">
+                            <h4 data-i18n="feeDuesHeader">Outstanding Fee Dues</h4>
+                            <div id="dbDuesContainer"
+                                style="display: flex; justify-content: space-between; align-items: center;">
+                                <!-- Rendered dynamically by JS -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="nav-btn" onclick="window.handleStudentLogout()" data-i18n="btnSignOut"
+                    style="background:#ff4757; color:white; border:none;">Sign Out</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. AI ANALYTICS TELEMETRY MODAL -->
+    <div class="app-modal" id="analyticsModal">
+        <div class="modal-content" style="max-width: 750px;">
+            <div class="modal-header">
+                <h2 data-i18n="analyticsTitle">📊 AI Analytics Telemetry</h2>
+                <button class="close-modal-btn" onclick="window.closeAppModal('analyticsModal')">✕</button>
+            </div>
+            <div class="modal-body">
+                <!-- Metrics cards -->
+                <div class="analytics-grid">
+                    <div class="analytics-stat-card">
+                        <div class="analytics-stat-val" id="statTotalQueries">0</div>
+                        <div class="analytics-stat-lbl" data-i18n="totalQueriesLabel">Total Queries</div>
+                    </div>
+                    <div class="analytics-stat-card">
+                        <div class="analytics-stat-val" id="statMatchRate">0%</div>
+                        <div class="analytics-stat-lbl" data-i18n="matchRateLabel">Match Accuracy</div>
+                    </div>
+                    <div class="analytics-stat-card">
+                        <div class="analytics-stat-val" id="statActiveStudents">0</div>
+                        <div class="analytics-stat-lbl" data-i18n="activeStudentsLabel">Authenticated Students</div>
+                    </div>
+                    <div class="analytics-stat-card">
+                        <div class="analytics-stat-val" id="statVoiceRequests">0</div>
+                        <div class="analytics-stat-lbl" data-i18n="voiceUsageLabel">Voice Requests</div>
+                    </div>
+                </div>
+
+                <!-- Live HTML5 Custom Canvas graphs -->
+                <div class="analytics-charts">
+                    <div class="chart-card">
+                        <h4 data-i18n="volumeOverTime">Chat Interactions Volume</h4>
+                        <div class="chart-canvas-container">
+                            <canvas id="lineChartCanvas"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-card">
+                        <h4 data-i18n="topicDistribution">Topic Distribution</h4>
+                        <div class="chart-canvas-container">
+                            <canvas id="donutChartCanvas"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. ADMIN PANEL & BOT TRAINER MODAL -->
+    <div class="app-modal" id="adminModal">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h2 data-i18n="adminTitle">⚙️ Global Settings & Bot Trainer</h2>
+                <button class="close-modal-btn" onclick="window.closeAppModal('adminModal')">✕</button>
+            </div>
+            <div class="modal-body">
+                <!-- Trainer trigger form -->
+                <div class="admin-section" style="display:flex; flex-direction:column; gap:12px;">
+                    <h3 data-i18n="adminAddResponse"
+                        style="font-family:var(--font-heading); font-size:1rem; border-bottom:1px solid var(--border-light); padding-bottom:6px;">
+                        Add / Edit Custom Bot Response</h3>
+
+                    <div class="form-group">
+                        <label data-i18n="adminKeywordLabel">Trigger Keyword</label>
+                        <input type="text" id="adminKey" placeholder="e.g. syllabus, library, admission">
+                    </div>
+
+                    <div class="form-group">
+                        <label data-i18n="adminResponseLabel">Bot Answer String</label>
+                        <textarea id="adminValue" data-i18n="adminResponseLabel" placeholder="Response text..."
+                            style="min-height:80px;"></textarea>
+                    </div>
+
+                    <button class="nav-btn primary admin-save-btn" onclick="window.submitAdminResponse()"
+                        style="align-self:flex-end;" data-i18n="adminSaveBtn">Save Training</button>
+                </div>
+
+                <!-- Trained dataset listing -->
+                <div class="admin-section" style="display:flex; flex-direction:column; gap:10px; margin-top:14px;">
+                    <h3 data-i18n="adminExistingResponses"
+                        style="font-family:var(--font-heading); font-size:1rem; border-bottom:1px solid var(--border-light); padding-bottom:6px;">
+                        Active Custom Answers</h3>
+                    <div class="admin-responses-list" id="adminResponsesList">
+                        <!-- Loaded dynamically from localStorage custom responding list -->
+                    </div>
+                    <button class="admin-reset-btn" onclick="window.submitAdminReset()" data-i18n="adminResetBtn">Reset
+                        Default Knowledge Base</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 5. AI DOCUMENT ANALYSIS / TRANSCRIPT SUMMARY MODAL -->
+    <div class="app-modal" id="docSummaryModal">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h2 data-i18n="docSummaryTitle">✨ AI Document Analysis</h2>
+                <button class="close-modal-btn" onclick="window.closeAppModal('docSummaryModal')">✕</button>
+            </div>
+            <div class="modal-body" id="docSummaryBody">
+                <!-- Loaded dynamically by ai.js summaries -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================
+       IN-APP BELL NOTICE DROPDOWN LIST
+       ============================================================ -->
+    <div class="notification-dropdown" id="notificationDropdown">
+        <div class="notif-header">
+            <span>Notice Board Alerts</span>
+            <button class="notif-clear-btn" onclick="window.clearNoticeBoard()">Clear All</button>
+        </div>
+        <div class="notif-list" id="notifList">
+            <!-- Notifications loaded from notification tracker -->
+        </div>
+    </div>
+
+    <!-- ============================================================
+       UNIFIED TOAST ALERTS FLOATER LAYER
+       ============================================================ -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- ============================================================
+       BOOTSTRAP MODULAR CONTROLLERS & EXPORT WINDOW METHODS
+       ============================================================ -->
+    <!-- Load Modular synchronous Scripts in Dependency Order (100% Direct file:// and CORS support) -->
+    <script src="js/config.js"></script>
+    <script src="js/db.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/speech.js"></script>
+    <script src="js/ai.js"></script>
+    <script src="js/analytics.js"></script>
+    <script src="js/notifications.js"></script>
+    <script src="js/avatar3d.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/chat.js"></script>
+
+    <script>
+        // Expose modules visual bindings to global window environment for compatible inline click hooks
+        window.openAppModal = (modalId) => window.openModal(modalId);
+        window.closeAppModal = (modalId) => window.closeModal(modalId);
+        window.toggleTheme = () => window.toggleTheme();
+
+        // Language Toggle EN/HI
+        window.toggleLanguage = () => {
+            const current = window.getLanguage();
+            const next = current === "en" ? "hi" : "en";
+            const btn = document.getElementById("langToggleBtn");
+            if (btn) btn.textContent = next === "en" ? "HI" : "EN";
+
+            window.setLanguage(next);
+            // Retranslate active chat elements
+            window.initChat();
+        };
+
+        // Bell Notifications
+        window.toggleNotifDropdown = () => window.toggleNotificationDropdown();
+        window.clearNoticeBoard = () => window.notices.clearAll();
+
+        // Chat Drawer Opens/Closes
+        window.toggleChat = () => {
+            const container = document.getElementById("chatContainer");
+            const btn = document.getElementById("chatToggleBtn");
+            const isOpen = container.classList.contains("open");
+
+            if (isOpen) {
+                container.classList.add("closing");
+                container.addEventListener("animationend", () => {
+                    container.classList.remove("open", "closing");
+                }, { once: true });
+                btn.classList.remove("active");
+            } else {
+                container.classList.add("open");
+                btn.classList.add("active");
+                window.initChat();
+                setTimeout(() => {
+                    const input = document.getElementById("userInput");
+                    if (input) input.focus();
+                }, 450);
+            }
+        };
+
+        // Chat Messages actions
+        window.handleKeyPress = (e) => { if (e.key === "Enter") window.sendMessage(); };
+        window.submitMessage = () => window.sendMessage();
+        window.toggleSpeaker = () => window.handleVoiceToggle();
+        window.summarizeChat = () => window.summarizeActiveChatTranscript();
+
+        // File Upload Attachment
+        window.uploadFileSelector = () => window.triggerFileUploadSelector();
+
+        // Voice controls
+        window.startVoiceRecognition = () => window.handleMicrophoneClick();
+        window.cancelVoiceListening = () => window.handleCancelListening();
+
+        // Student Authentication handlers
+        window.handlePortalClick = () => {
+            const student = window.auth.getCurrentStudent();
+            if (student) {
+                window.openModal('studentDashboardModal');
+            } else {
+                window.openModal('authModal');
+            }
+        };
+
+        window.switchAuthTab = (tab) => {
+            const tabLogin = document.getElementById("tabLoginBtn");
+            const tabReg = document.getElementById("tabRegisterBtn");
+            const formLogin = document.getElementById("loginFormContainer");
+            const formReg = document.getElementById("registerFormContainer");
+            const modalHeaderTitle = document.querySelector("#authModal .modal-header h2");
+
+            const isHi = window.getLanguage() === "hi";
+
+            if (tab === "login") {
+                tabLogin.classList.add("active");
+                tabReg.classList.remove("active");
+                formLogin.style.display = "flex";
+                formReg.style.display = "none";
+                if (modalHeaderTitle) modalHeaderTitle.textContent = isHi ? "🔐 छात्र पोर्टल लॉगिन" : "🔐 Student Portal Login";
+            } else {
+                tabLogin.classList.remove("active");
+                tabReg.classList.add("active");
+                formLogin.style.display = "none";
+                formReg.style.display = "flex";
+                if (modalHeaderTitle) modalHeaderTitle.textContent = isHi ? "📝 छात्र पंजीकरण" : "📝 Student Registration";
+            }
+        };
+
+        window.submitStudentLogin = () => {
+            const roll = document.getElementById("loginRollNumber").value.trim();
+            const pass = document.getElementById("loginPassword").value.trim();
+
+            if (!roll || !pass) {
+                const dict = window.getLanguage() === "hi" ? "कृपया सभी आवश्यक फ़ील्ड भरें!" : "Please fill out all required fields!";
+                window.toast.show(dict, "error");
+                return;
+            }
+
+            window.safeUIAction(async () => {
+                const submitBtn = document.querySelector("#loginFormContainer button");
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = window.getLanguage() === "hi" ? "सत्यापित किया जा रहा है..." : "Authenticating...";
+                }
+
+                await window.auth.login(roll, pass);
+
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = window.getLanguage() === "hi" ? "साइन इन करें" : "Sign In";
+                }
+
+                // Clear fields
+                document.getElementById("loginRollNumber").value = "";
+                document.getElementById("loginPassword").value = "";
+
+                window.closeModal('authModal');
+                window.updateAuthView();
+
+                const dict = window.getLanguage() === "hi" ? "सफलतापूर्वक लॉगिन किया गया!" : "Logged in successfully!";
+                window.toast.show(dict, "success");
+
+                // Trigger dynamic dues notification alert
+                const activeSt = window.auth.getCurrentStudent();
+                if (activeSt && activeSt.feeDues > 0) {
+                    window.triggerDuesAlert(activeSt.fullName);
+                }
+            }, "Invalid Roll Number or Password!");
+        };
+
+        window.submitStudentRegister = () => {
+            const name = document.getElementById("regFullName").value.trim();
+            const roll = document.getElementById("regRollNumber").value.trim();
+            const pass = document.getElementById("regPassword").value.trim();
+            const course = document.getElementById("regCourse").value;
+            const att = document.getElementById("regAttendance").value.trim();
+
+            if (!name || !roll || !pass || !att) {
+                const dict = window.getLanguage() === "hi" ? "कृपया सभी आवश्यक फ़ील्ड भरें!" : "Please fill out all required fields!";
+                window.toast.show(dict, "error");
+                return;
+            }
+
+            window.safeUIAction(async () => {
+                const submitBtn = document.querySelector("#registerFormContainer button");
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = window.getLanguage() === "hi" ? "बनाया जा रहा है..." : "Creating Account...";
+                }
+
+                await window.auth.register(name, roll, pass, course, att);
+
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = window.getLanguage() === "hi" ? "पंजीकरण करें" : "Sign Up";
+                }
+
+                // Reset fields
+                document.getElementById("regFullName").value = "";
+                document.getElementById("regRollNumber").value = "";
+                document.getElementById("regPassword").value = "";
+                document.getElementById("regAttendance").value = "";
+
+                window.switchAuthTab('login');
+                const dict = window.getLanguage() === "hi" ? "खाता बन गया! अब आप लॉगिन कर सकते हैं।" : "Account created! You can now log in.";
+                window.toast.show(dict, "success");
+            }, "Registration failed. Duplicate roll numbers unsupported.");
+        };
+
+        window.handleStudentLogout = () => {
+            window.auth.logout();
+            window.closeModal('studentDashboardModal');
+            window.updateAuthView();
+            const dict = window.getLanguage() === "hi" ? "साइन आउट किया गया!" : "Signed out successfully!";
+            window.toast.show(dict, "info");
+        };
+
+        // Admin responses triggers
+        window.submitAdminResponse = () => window.saveAdminForm();
+        window.submitAdminReset = () => window.resetAdminDefaults();
+
+        // ============================================================
+        //  INIT WEB APPLICATION STRAP
+        // ============================================================
+        document.addEventListener("DOMContentLoaded", () => {
+            // Restore theme dark/light
+            window.initTheme();
+
+            // Language selection checks
+            let defaultLang = "en";
+            try {
+                defaultLang = sessionStorage.getItem("uem_language") || "en";
+            } catch (e) { }
+
+            const langBtn = document.getElementById("langToggleBtn");
+            if (langBtn) langBtn.textContent = defaultLang === "en" ? "HI" : "EN";
+            window.setLanguage(defaultLang);
+
+            // Recover authenticated student profile if valid
+            window.updateAuthView();
+
+            // Notice board reactive counters
+            window.notices.registerUpdateCallback((unreadCount, list) => {
+                window.renderNotifDropdown(unreadCount, list);
+            });
+
+            // Render 3D realistic refractive concentric glass chatbot orb
+            window.init3dAvatar("canvas-3d-city");
+        });
+
+        // Global wrapper helper for notifications dropdown render bindings
+        window.renderNotifDropdown = (unreadCount, list) => {
+            window.updateNotificationBadge(unreadCount);
+            window.renderNotificationTray(unreadCount, list);
+        };
+
+    </script>
+</body>
+
+</html>
