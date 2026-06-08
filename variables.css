@@ -1,0 +1,84 @@
+/* ============================================================
+   DESIGN SYSTEM & VARIABLES (css/variables.css)
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap');
+
+:root {
+    /* Fonts */
+    --font-heading: 'Outfit', 'Poppins', sans-serif;
+    --font-body: 'Poppins', sans-serif;
+    
+    /* Layout Constants */
+    --radius-window: 24px;
+    --radius-card: 16px;
+    --radius-bubble: 18px;
+    --radius-pill: 30px;
+    
+    /* Default / Common variables */
+    --transition-smooth: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    --transition-spring: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    
+    /* DARK THEME (Default) */
+    --bg-page: radial-gradient(circle at 50% 50%, #101026 0%, #03030a 100%);
+    --primary-start: #0044ff;
+    --primary-end: #8b5cf6;
+    --accent: #8b5cf6;
+    --ring-cyan: #00ffff;
+    --ring-green: #00ff87;
+    --thinking-color: #00ffcc;
+    --accent-rgb: 139, 92, 246;
+    --nav-bg: rgba(13, 13, 33, 0.5);
+    --chat-bg: rgba(15, 15, 30, 0.65);
+    --messages-bg: rgba(8, 8, 20, 0.35);
+    --user-bubble-start: #0044ff;
+    --user-bubble-end: #8b5cf6;
+    --bot-bubble: rgba(25, 25, 45, 0.85);
+    --panel-bg: rgba(20, 20, 38, 0.85);
+    --card-bg: rgba(30, 30, 55, 0.45);
+    
+    --text-primary: #f3f4f6;
+    --text-secondary: #9ca3af;
+    --text-muted: #6b7280;
+    --border-light: rgba(255, 255, 255, 0.08);
+    --border-glow: rgba(139, 92, 246, 0.25);
+    
+    --shadow-main: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 40px rgba(139, 92, 246, 0.15);
+    --shadow-card: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    --shadow-btn: 0 8px 24px rgba(139, 92, 246, 0.4);
+
+    --glass-blur: blur(20px);
+    --glass-saturate: saturate(180%);
+    --particle-color: #8b5cf6;
+    
+}
+
+/* LIGHT THEME (Activated via class) */
+.light-theme {
+    --bg-page: radial-gradient(circle at 50% 50%, #f4f6ff 0%, #e1e5f5 100%);
+    --primary-start: #003366;
+    --primary-end: #6a0dad;
+    --accent: #6a0dad;
+    --accent-rgb: 106, 13, 173;
+    --nav-bg: rgba(255, 255, 255, 0.6);
+    --chat-bg: rgba(255, 255, 255, 0.75);
+    --messages-bg: rgba(240, 244, 255, 0.5);
+    --user-bubble-start: #003366;
+    --user-bubble-end: #6a0dad;
+    --bot-bubble: rgba(255, 255, 255, 0.95);
+    --panel-bg: rgba(255, 255, 255, 0.92);
+    --card-bg: rgba(245, 247, 255, 0.8);
+    
+    --text-primary: #1a1a3a;
+    --text-secondary: #4b5563;
+    --text-muted: #8888aa;
+    --border-light: rgba(0, 0, 0, 0.08);
+    --border-glow: rgba(106, 13, 173, 0.2);
+    
+    --shadow-main: 0 20px 50px rgba(0, 0, 0, 0.15), 0 0 40px rgba(106, 13, 173, 0.08);
+    --shadow-card: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+    --shadow-btn: 0 8px 24px rgba(106, 13, 173, 0.3);
+    
+    --glass-blur: blur(25px);
+    --glass-saturate: saturate(150%);
+}
