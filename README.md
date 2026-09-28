@@ -12,14 +12,14 @@ College websites are full of information, but nobody wants to dig through ten pa
 
 The chatbot
 
-~ Answers common college questions (admissions, eligibility, fees, hostel, library, placements, scholarships, campus, rankings, location, etc.)
-~ Works in English and Hindi, with a one-click language toggle
-~ Voice input and text-to-speech using the browser's Speech APIs
-~ Optional real AI mode using the Gemini API (or any OpenAI-compatible endpoint). If no API key is set, it falls back to the built-in keyword-based answers, so it always works
-~ Upload a document and get an AI summary of it
-~ Summarize the chat, and export the conversation as TXT or PDF
-~ Quick-reply chips so people don't have to type
-~ A glowing 3D avatar (Three.js) that reacts while the bot is "thinking"
+Answers common college questions (admissions, eligibility, fees, hostel, library, placements, scholarships, campus, rankings, location, etc.)
+Works in English and Hindi, with a one-click language toggle
+Voice input and text-to-speech using the browser's Speech APIs
+Optional real AI mode using the Gemini API (or any OpenAI-compatible endpoint). If no API key is set, it falls back to the built-in keyword-based answers, so it always works
+Upload a document and get an AI summary of it
+Summarize the chat, and export the conversation as TXT or PDF
+Quick-reply chips so people don't have to type
+A glowing 3D avatar (Three.js) that reacts while the bot is "thinking"
 
 # Student portal
 
